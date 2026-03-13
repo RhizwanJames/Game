@@ -48,12 +48,11 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
 
-  /* Video style */
-  video {
+  /* Image styling */
+  #header-image {
+    max-width: 90%;
     border-radius: 15px;
     margin-bottom: 20px;
-    max-width: 90%;
-    height: auto;
   }
 </style>
 </head>
@@ -63,11 +62,8 @@
 <h1>Catch the Heart 💖</h1>
 <p>Click the heart 10 times to unlock the surprise!</p>
 
-<!-- Video inserted here -->
-<video width="320" height="180" controls autoplay muted loop>
-  <source src="love-video..mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
+<!-- Image inserted here -->
+<img id="header-image" src="love-image.jpg" alt="Love Image" />
 
 <div id="score">Score: 0</div>
 
