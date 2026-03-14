@@ -3,155 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SparkQuotes Pro</title>
+    <title>Hustle - Infinite Inspiration</title>
     <style>
-        :root {
-            --bg: #121212;
-            --text: #ffffff;
-            --card: #ffffff;
-            --quote: #111111;
-        }
-        .light {
-            --bg: #e0e0e0;
-            --text: #121212;
-        }
         body {
             margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: "Times New Roman", Times, serif;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            transition: 0.4s;
             overflow: hidden;
+            color: #333;
         }
-        .nav {
+
+        /* 1. APP HEADER */
+        .app-header {
             position: absolute;
             top: 20px;
+            width: 320px;
             display: flex;
-            gap: 10px;
-            z-index: 10;
+            align-items: center;
+            justify-content: space-between;
         }
-        select, .t-btn {
-            background: rgba(255,255,255,0.1);
-            color: var(--text);
-            border: 1px solid #555;
-            padding: 8px 12px;
-            border-radius: 20px;
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .app-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d86bff;
+        }
+
+        .discover-btn {
+            background: white;
+            border: 1px solid #eee;
+            color: #555;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
         }
+
+        /* 2. MAIN CARD CONTAINER */
         #app {
             position: relative;
             width: 320px;
-            height: 480px;
+            height: 500px;
+            margin-top: 60px;
+            perspective: 1000px;
         }
+
         .card {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: var(--card);
-            border-radius: 20px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: left;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            padding: 40px;
-            box-sizing: border-box;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            cursor: grab;
             transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
         }
-        .quote-text { color: var(--quote); font-size: 24px; font-weight: bold; margin-bottom: 20px; }
-        .quote-author { color: #ff2d55; font-style: italic; text-transform: uppercase; }
-        .controls { margin-top: 30px; display: flex; gap: 20px; }
+
+        /* Card Content */
+        .quote-text {
+            color: #1a1a1a;
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 25px;
+            font-family: serif; /* Using a clean serif for impact */
+        }
+
+        .author-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .author-initial {
+            width: 50px;
+            height: 50px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .author-text-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+
+        .author-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        /* 3. SWIPE CONTROLS */
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
         .btn {
-            width: 60px; height: 60px; border-radius: 50%; border: none;
-            background: white; font-size: 24px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .no { color: #ff3b30; }
-        .yes { color: #34c759; }
-        
-        /* History Sidebar */
-        #history {
+
+        .no-btn {
+            background: white;
+            color: #fd5068; /* Red X */
+            border: 1px solid #eee;
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%);
+            color: white; /* White Heart */
+        }
+
+        .btn:hover { transform: scale(1.1) translateY(-5px); }
+        .btn:active { transform: scale(0.9); }
+
+        /* Loader */
+        .loader {
             position: absolute;
-            right: -250px;
-            width: 250px;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            transition: 0.3s;
-            padding: 20px;
-            overflow-y: auto;
-            color: white;
             font-size: 14px;
+            color: #d86bff;
+            font-style: italic;
+            display: none;
         }
-        #history.open { right: 0; }
     </style>
 </head>
-<body id="body">
+<body>
 
-    <div class="nav">
-        <select id="cat" onchange="getQuote()">
-            <option value="famous-quotes">Wisdom</option>
-            <option value="success">Success</option>
-            <option value="inspirational">Inspiration</option>
-        </select>
-        <button class="t-btn" onclick="document.body.classList.toggle('light')">🌓 Theme</button>
-        <button class="t-btn" onclick="document.getElementById('history').classList.toggle('open')">📜 History</button>
+    <div class="app-header">
+        <div class="logo-container">
+            <div class="logo-box">H</div>
+            <div class="app-name">Hustle</div>
+        </div>
+        <button id="search-toggle" class="discover-btn" onclick="fetchNewQuote('famous-quotes')">Discover</button>
     </div>
 
     <div id="app">
         <div id="main-card" class="card">
-            <div id="text" class="quote-text">Click a button to start</div>
-            <div id="author" class="quote-author"></div>
+            <div class="loader" id="loader">Fetching...</div>
+            <div class="quote-text" id="text">"Don't limit your challenges. Challenge your limits."</div>
+            <div class="author-section" id="author-info">
+                <div class="author-initial" id="initial">J</div>
+                <div class="author-text-container">
+                    <div class="author-label">Author</div>
+                    <div class="author-name" id="name">Jane Doe</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn no" onclick="swipe('left')">✕</button>
-        <button class="btn yes" onclick="swipe('right')">♥</button>
+        <button class="btn no-btn" onclick="swipe('left')">✕</button>
+        <button class="btn yes-btn" onclick="swipe('right')">♥</button>
     </div>
 
-    <div id="history"><h3>Liked Quotes</h3><div id="hist-list"></div></div>
-
     <script>
-        let currentQuote = "";
-        async function getQuote() {
-            const cat = document.getElementById('cat').value;
+        async function fetchNewQuote(category) {
+            const textEl = document.getElementById('text');
+            const initialEl = document.getElementById('initial');
+            const nameEl = document.getElementById('name');
+            const loader = document.getElementById('loader');
+            const authorInfo = document.getElementById('author-info');
+
+            // Set loading state
+            textEl.style.opacity = '0';
+            authorInfo.style.opacity = '0';
+            loader.style.display = 'block';
+
             try {
-                const res = await fetch(`https://api.quotable.io/random?tags=${cat}`);
-                const data = await res.json();
-                currentQuote = data.content;
-                document.getElementById('text').innerText = `"${data.content}"`;
-                document.getElementById('author').innerText = `— ${data.author}`;
-            } catch (e) {
-                document.getElementById('text').innerText = "Keep going, you're doing great!";
+                // Fetching a specific category to mimic the "Discover" experience
+                const response = await fetch(`https://api.quotable.io/random?tags=${category}`);
+                const data = await response.json();
+                
+                textEl.innerText = `"${data.content}"`;
+                nameEl.innerText = data.author;
+                initialEl.innerText = data.author[0].toUpperCase();
+            } catch (error) {
+                textEl.innerText = '"Keep going, you\'re doing great!"';
+                nameEl.innerText = 'Unknown';
+                initialEl.innerText = 'U';
             }
+
+            // End loading state
+            loader.style.display = 'none';
+            textEl.style.opacity = '1';
+            authorInfo.style.opacity = '1';
         }
 
         function swipe(dir) {
             const card = document.getElementById('main-card');
-            if(dir === 'right') {
-                const item = document.createElement('p');
-                item.innerText = currentQuote;
-                document.getElementById('hist-list').prepend(item);
-            }
+            if (!card) return;
+
+            const moveX = dir === 'right' ? 600 : -600;
+            const rotate = dir === 'right' ? 30 : -30;
             
-            card.style.transform = `translateX(${dir==='right'?600:-600}px) rotate(${dir==='right'?25:-25}deg)`;
-            card.style.opacity = "0";
-            
+            card.style.transform = `translateX(${moveX}px) rotate(${rotate}deg)`;
+            card.style.opacity = '0';
+
             setTimeout(async () => {
-                await getQuote();
+                await fetchNewQuote('motivation');
+                // Reset card position instantly
                 card.style.transition = "none";
-                card.style.transform = "translate(0) rotate(0)";
-                card.style.opacity = "1";
-                setTimeout(() => card.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s", 50);
+                card.style.transform = "translateX(0) rotate(0)";
+                card.style.opacity = '1';
+                // Allow transition to work again
+                setTimeout(() => {
+                    card.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease";
+                }, 50);
             }, 400);
         }
-        window.onload = getQuote;
+
+        // Initialize with first quote
+        window.onload = () => fetchNewQuote('motivation');
     </script>
 </body>
 </html>
