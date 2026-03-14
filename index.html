@@ -7,51 +7,41 @@
     <style>
         body {
             margin: 0;
-            background: #ffffff;
-            font-family: "Times New Roman", Times, serif;
+            background: #f8f9fd;
+            font-family: -apple-system, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* 1. APP HEADER */
+        /* Header UI */
         .app-header {
             position: absolute;
             top: 20px;
             width: 320px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            z-index: 100;
+            align-items: center;
         }
-
-        .logo-container { display: flex; align-items: center; gap: 10px; }
 
         .logo-box {
             width: 40px; height: 40px;
             background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%);
             border-radius: 10px;
             display: flex; justify-content: center; align-items: center;
-            color: white; font-weight: bold; font-size: 18px;
+            color: white; font-weight: bold;
         }
 
-        .app-name { font-size: 16px; font-weight: bold; color: #a76bff; }
-
-        select.discover-btn {
-            background: white;
-            border: 1px solid #eee;
-            color: #555;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            outline: none;
+        .discover-btn {
+            background: white; border: 1px solid #eee;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer;
         }
 
-        /* 2. MAIN CARD */
-        #app {
+        /* Card System */
+        #card-container {
             position: relative;
             width: 320px;
             height: 480px;
@@ -62,144 +52,90 @@
             width: 100%; height: 100%;
             background: white;
             border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             padding: 40px;
             box-sizing: border-box;
-            display: flex; flex-direction: column; justify-content: center;
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
+            display: flex; flex-direction: column;
+            transition: transform 0.5s ease, opacity 0.3s ease;
         }
 
-        .quote-text {
-            color: #1a1a1a;
-            font-size: 26px;
-            font-weight: bold;
-            line-height: 1.3;
-            margin-bottom: 30px;
-        }
+        .quote-text { font-size: 26px; font-weight: bold; line-height: 1.3; margin-top: 60px; }
+        .author-name { margin-top: auto; font-weight: 600; color: #555; }
 
-        .author-section { display: flex; align-items: center; gap: 12px; margin-top: auto; }
-
-        .author-initial {
-            width: 45px; height: 45px;
-            background: #f0f0f0;
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; color: #888;
-        }
-
-        .author-label { font-size: 10px; text-transform: uppercase; color: #aaa; margin-bottom: 2px; }
-        .author-name { font-size: 15px; font-weight: 600; color: #333; }
-
-        /* 3. BUTTONS */
-        .controls {
-            position: fixed;
-            bottom: 40px;
-            display: flex;
-            gap: 20px;
-        }
-
+        /* Controls */
+        .controls { margin-top: 30px; display: flex; gap: 20px; }
         .btn {
-            width: 65px; height: 65px;
-            border-radius: 50%; border: none;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: 0.2s;
+            width: 65px; height: 65px; border-radius: 50%; border: none;
+            cursor: pointer; font-size: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        .no-btn { background: white; color: #ff4b2b; border: 1px solid #eee; }
-        .yes-btn { background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%); color: white; }
-        .btn:active { transform: scale(0.9); }
+        .no { background: white; color: #ff4b2b; }
+        .yes { background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%); color: white; }
     </style>
 </head>
 <body>
 
     <div class="app-header">
-        <div class="logo-container">
+        <div style="display:flex; align-items:center; gap:10px;">
             <div class="logo-box">H</div>
-            <div class="app-name">Hustle</div>
+            <span style="color:#a76bff; font-weight:bold;">Hustle</span>
         </div>
-        <select class="discover-btn" id="category" onchange="fetchNewQuote()">
+        <select class="discover-btn" id="cat-select">
             <option value="famous-quotes">Discover</option>
+            <option value="motivation">Motivation</option>
             <option value="success">Success</option>
-            <option value="wisdom">Wisdom</option>
-            <option value="inspirational">Inspire</option>
         </select>
     </div>
 
-    <div id="app">
-        <div id="main-card" class="card">
-            <div class="quote-text" id="text">"Loading inspiration..."</div>
-            <div class="author-section">
-                <div class="author-initial" id="initial">?</div>
-                <div>
-                    <div class="author-label">Author</div>
-                    <div class="author-name" id="name">Please wait</div>
-                </div>
-            </div>
+    <div id="card-container">
+        <div id="active-card" class="card">
+            <div class="quote-text" id="q-text">Loading...</div>
+            <div class="author-name" id="q-author"></div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn no-btn" onclick="swipe('left')">✕</button>
-        <button class="btn yes-btn" onclick="swipe('right')">♥</button>
+        <button class="btn no" onclick="handleSwipe('left')">✕</button>
+        <button class="btn yes" onclick="handleSwipe('right')">♥</button>
     </div>
 
     <script>
-        // Local quotes in case API is offline
-        const localQuotes = [
-            { t: "Success is not final, failure is not fatal.", a: "Winston Churchill" },
-            { t: "The only way to do great work is to love what you do.", a: "Steve Jobs" },
-            { t: "Believe you can and you're halfway there.", a: "T. Roosevelt" },
-            { t: "Action is the foundational key to all success.", a: "Pablo Picasso" },
-            { t: "Your only limit is your mind.", a: "Anonymous" }
-        ];
-
-        let localIdx = 0;
-
-        async function fetchNewQuote() {
-            const cat = document.getElementById('category').value;
+        // Force a unique request every time using a timestamp
+        async function getNewQuote() {
+            const cat = document.getElementById('cat-select').value;
             try {
-                // Try to get a fresh quote from the API
-                const res = await fetch(`https://api.quotable.io/random?tags=${cat}`);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                renderQuote(data.content, data.author);
-            } catch (e) {
-                // If API fails, use local quotes to keep it moving
-                const q = localQuotes[localIdx % localQuotes.length];
-                renderQuote(q.t, q.a);
-                localIdx++;
+                const response = await fetch(`https://api.quotable.io/random?tags=${cat}&t=${Date.now()}`);
+                const data = await response.json();
+                document.getElementById('q-text').innerText = `"${data.content}"`;
+                document.getElementById('q-author').innerText = `— ${data.author}`;
+            } catch (err) {
+                document.getElementById('q-text').innerText = "Believe you can and you're halfway there.";
+                document.getElementById('q-author').innerText = "— T. Roosevelt";
             }
         }
 
-        function renderQuote(text, author) {
-            document.getElementById('text').innerText = `"${text}"`;
-            document.getElementById('name').innerText = author;
-            document.getElementById('initial').innerText = author[0].toUpperCase();
-        }
-
-        function swipe(dir) {
-            const card = document.getElementById('main-card');
-            const x = dir === 'right' ? 600 : -600;
-            const rotate = dir === 'right' ? 25 : -25;
+        function handleSwipe(direction) {
+            const card = document.getElementById('active-card');
+            const xMove = direction === 'right' ? 500 : -500;
             
-            card.style.transform = `translateX(${x}px) rotate(${rotate}deg)`;
+            // 1. Swipe card out
+            card.style.transform = `translateX(${xMove}px) rotate(${direction==='right'?20:-20}deg)`;
             card.style.opacity = '0';
 
+            // 2. After it's gone, reset and load new quote
             setTimeout(async () => {
-                await fetchNewQuote();
-                card.style.transition = "none";
-                card.style.transform = "translateX(0) rotate(0)";
+                await getNewQuote();
+                card.style.transition = 'none'; // Instant reset
+                card.style.transform = 'translateX(0) rotate(0)';
                 card.style.opacity = '1';
+                
+                // 3. Re-enable transitions
                 setTimeout(() => {
-                    card.style.transition = "transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease";
+                    card.style.transition = 'transform 0.5s ease, opacity 0.3s ease';
                 }, 50);
-            }, 350);
+            }, 300);
         }
 
-        window.onload = fetchNewQuote;
+        window.onload = getNewQuote;
     </script>
 </body>
 </html>
