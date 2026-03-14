@@ -1,116 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Catch the Heart Game</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    height: 100vh;
-    margin: 0;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkQuotes | Swipe for Motivation</title>
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-  h1 {
-    margin-top: 20px;
-  }
+        #app {
+            position: relative;
+            width: 350px;
+            height: 600px;
+            perspective: 1000px;
+        }
 
-  #gameArea {
-    width: 90%;
-    height: 60vh;
-    margin: 20px auto;
-    border: 3px solid white;
-    border-radius: 15px;
-    position: relative;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.2);
-  }
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            cursor: grab;
+            user-select: none;
+        }
 
-  #heart {
-    font-size: 40px;
-    position: absolute;
-    cursor: pointer;
-  }
+        .card:active { cursor: grabbing; }
 
-  #score {
-    font-size: 20px;
-    margin-top: 10px;
-  }
+        .quote-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-  #letter {
-    display: none;
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    width: 300px;
-    margin: 20px auto;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  }
+        .quote-author {
+            color: #ff5a60;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-  /* Image styling */
-  #header-image {
-    max-width: 90%;
-    border-radius: 15px;
-    margin-bottom: 20px;
-  }
-</style>
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.9); }
+        .dislike { color: #f56767; }
+        .like { color: #4ade80; }
+
+    </style>
 </head>
-
 <body>
 
-<h1>Catch the Heart 💖</h1>
-<p>Click the heart 10 times to unlock the surprise!</p>
+    <div id="app">
+        </div>
 
-<!-- Image inserted here -->
-<img id="header-image" src="love-image.jpg" alt="love-image.jpg" />
+    <div class="controls">
+        <button class="dislike" onclick="swipe('left')">✖</button>
+        <button class="like" onclick="swipe('right')">❤</button>
+    </div>
 
-<div id="score">Score: 0</div>
+    <script>
+        const quotes = [
+            { text: "Believe you can and you're halfway there.", author: "T. Roosevelt" },
+            { text: "Don't count the days, make the days count.", author: "Muhammad Ali" },
+            { text: "Your passion is waiting for your courage to catch up.", author: "Isabelle Lafleche" },
+            { text: "Small progress is still progress.", author: "Anonymous" },
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" }
+        ];
 
-<div id="gameArea">
-  <div id="heart">❤️</div>
-</div>
+        let currentIndex = 0;
+        const app = document.getElementById('app');
 
-<div id="letter">
-  <h2>💌 Surprise Letter</h2>
-  <p>
-    Hi ❤️<br /><br />
-    You made it to the end of the game!  
-    I just wanted to say that you are very special to me.  
-    Your smile makes my day brighter and I'm really lucky to know you.  
-    Thank you for being amazing.
-  </p>
-</div>
+        function createCard(index) {
+            const quote = quotes[index % quotes.length];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="quote-text">"${quote.text}"</div>
+                <div class="quote-author">— ${quote.author}</div>
+            `;
+            return card;
+        }
 
-<script>
-  let heart = document.getElementById("heart");
-  let gameArea = document.getElementById("gameArea");
-  let scoreText = document.getElementById("score");
-  let letter = document.getElementById("letter");
+        function init() {
+            app.appendChild(createCard(currentIndex));
+        }
 
-  let score = 0;
-  let goal = 10;
+        function swipe(direction) {
+            const card = app.querySelector('.card');
+            const rotation = direction === 'right' ? 30 : -30;
+            const translation = direction === 'right' ? 500 : -500;
 
-  function moveHeart() {
-    let x = Math.random() * (gameArea.clientWidth - 40);
-    let y = Math.random() * (gameArea.clientHeight - 40);
-    heart.style.left = x + "px";
-    heart.style.top = y + "px";
-  }
+            card.style.transform = `translateX(${translation}px) rotate(${rotation}deg)`;
+            card.style.opacity = '0';
 
-  heart.addEventListener("click", function () {
-    score++;
-    scoreText.textContent = "Score: " + score;
-    moveHeart();
+            setTimeout(() => {
+                card.remove();
+                currentIndex++;
+                app.appendChild(createCard(currentIndex));
+            }, 300);
+        }
 
-    if (score >= goal) {
-      heart.style.display = "none";
-      letter.style.display = "block";
-    }
-  });
-
-  moveHeart();
-</script>
-
+        init();
+    </script>
 </body>
 </html>
