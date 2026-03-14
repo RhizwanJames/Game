@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motivated By Rhizwan | 1000+ Edition</title>
+    <title>SparkQuotes | 1000+ Categories</title>
     <style>
         body {
             margin: 0;
-            background: #1a1a1a;
+            background: #121212;
             font-family: "Times New Roman", Times, serif;
             display: flex;
             flex-direction: column;
@@ -18,19 +18,32 @@
             overflow: hidden;
         }
 
-        .header {
+        /* Category Filter Styling */
+        .filter-container {
             position: absolute;
-            top: 40px;
-            font-size: 24px;
-            font-style: italic;
-            color: #f1f1f1;
-            opacity: 0.8;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        select {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: serif;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
         }
 
         #app {
             position: relative;
             width: 320px;
             height: 480px;
+            margin-top: 40px;
         }
 
         .card {
@@ -38,7 +51,7 @@
             width: 100%;
             height: 100%;
             background: #ffffff;
-            border-radius: 15px;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -46,128 +59,35 @@
             padding: 40px;
             box-sizing: border-box;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
         }
 
         .quote-text {
             color: #111;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            line-height: 1.3;
+            line-height: 1.4;
             margin-bottom: 20px;
         }
 
         .quote-author {
-            color: #d63384;
-            font-size: 16px;
+            color: #ff2d55;
+            font-size: 15px;
             font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .controls {
-            margin-top: 50px;
+            margin-top: 40px;
             display: flex;
             gap: 30px;
         }
 
         .btn {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 22px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: 0.3s;
-        }
-
-        .no { color: #dc3545; border: 2px solid #dc3545; }
-        .yes { color: #198754; border: 2px solid #198754; }
-        .btn:hover { transform: scale(1.1); }
-        
-        /* Loading Spinner */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d63384;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-
-    <div class="header">Infinite Inspiration</div>
-
-    <div id="app">
-        <div id="main-card" class="card">
-            <div id="loader" class="loader"></div>
-            <div class="quote-text" id="text">"Tap a button to start your journey."</div>
-            <div class="quote-author" id="author">— SparkQuotes</div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button class="btn no" onclick="swipe('left')">✕</button>
-        <button class="btn yes" onclick="swipe('right')">♥</button>
-    </div>
-
-    <script>
-        async function fetchNewQuote() {
-            const textEl = document.getElementById('text');
-            const authorEl = document.getElementById('author');
-            const loader = document.getElementById('loader');
-
-            textEl.style.display = 'none';
-            authorEl.style.display = 'none';
-            loader.style.display = 'block';
-
-            try {
-                // Using a reliable public API for 1000s of quotes
-                const response = await fetch('https://api.quotable.io/random');
-                const data = await response.json();
-                
-                textEl.innerText = `"${data.content}"`;
-                authorEl.innerText = `— ${data.author.toUpperCase()}`;
-            } catch (error) {
-                textEl.innerText = '"The only way to do great work is to love what you do."';
-                authorEl.innerText = '— STEVE JOBS';
-            }
-
-            loader.style.display = 'none';
-            textEl.style.display = 'block';
-            authorEl.style.display = 'block';
-        }
-
-        function swipe(dir) {
-            const card = document.getElementById('main-card');
-            const x = dir === 'right' ? 500 : -500;
-            const rotate = dir === 'right' ? 25 : -25;
-            
-            card.style.transform = `translateX(${x}px) rotate(${rotate}deg)`;
-            card.style.opacity = "0";
-
-            setTimeout(async () => {
-                await fetchNewQuote();
-                card.style.transition = "none";
-                card.style.transform = "translateX(0) rotate(0)";
-                card.style.opacity = "1";
-                setTimeout(() => {
-                    card.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
-                }, 50);
-            }, 350);
-        }
-
-        // Load first quote automatically
-        window.onload = fetchNewQuote;
-    </script>
-</body>
-</html>
