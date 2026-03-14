@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SparkQuotes | Swipe for Energy</title>
+    <title>SparkQuotes</title>
     <style>
-        :root {
-            --primary-grad: linear-gradient(45deg, #fd267a, #ff6036);
-            --bg-grad: linear-gradient(180deg, #242424 0%, #000000 100%);
-        }
-
         body {
             margin: 0;
-            background: var(--bg-grad);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle, #2c2c2c 0%, #000000 100%);
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -23,167 +18,130 @@
             color: white;
         }
 
-        .header {
+        .logo {
             position: absolute;
-            top: 20px;
+            top: 30px;
+            font-size: 24px;
             font-weight: bold;
-            font-size: 1.5rem;
-            letter-spacing: -1px;
-            background: var(--primary-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ff6036;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         #app {
             position: relative;
-            width: 90vw;
-            max-width: 400px;
-            height: 70vh;
-            perspective: 1000px;
+            width: 320px;
+            height: 480px;
         }
 
         .card {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #ffffff;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 30px;
             box-sizing: border-box;
             text-align: center;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
-            cursor: grab;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.5s ease, opacity 0.5s ease;
         }
 
         .quote-text {
-            font-size: 1.8rem;
-            font-weight: 800;
-            line-height: 1.2;
+            color: #222;
+            font-size: 22px;
+            font-weight: bold;
             margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .quote-author {
-            font-size: 0.9rem;
-            opacity: 0.6;
+            color: #ff267a;
+            font-size: 14px;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .controls {
             margin-top: 40px;
             display: flex;
-            gap: 25px;
-            align-items: center;
+            gap: 30px;
         }
 
         .btn {
-            width: 65px;
-            height: 65px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             border: none;
-            background: #1a1a1a;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            transition: 0.3s;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            font-size: 28px;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
+        .no { background: #fff; color: #fd5068; border: 2px solid #fd5068; }
+        .yes { background: #fff; color: #1be4a1; border: 2px solid #1be4a1; }
         .btn:hover { transform: scale(1.1); }
-        .btn:active { transform: scale(0.9); }
-
-        .dislike { color: #fd5068; border: 2px solid #fd5068; }
-        .like { color: #1be4a1; border: 2px solid #1be4a1; }
-
-        /* Label animations */
-        .stamp {
-            position: absolute;
-            top: 40px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 2rem;
-            text-transform: uppercase;
-            opacity: 0;
-            transform: rotate(-10deg);
-        }
-        .stamp-like { color: #1be4a1; border: 4px solid #1be4a1; right: 40px; }
-        .stamp-nope { color: #fd5068; border: 4px solid #fd5068; left: 40px; }
-
     </style>
 </head>
 <body>
 
-    <div class="header">SparkQuotes</div>
+    <div class="logo">SparkQuotes</div>
 
-    <div id="app">
-        </div>
+    <div id="app"></div>
 
     <div class="controls">
-        <button class="btn dislike" onclick="swipe('left')">✕</button>
-        <button class="btn like" onclick="swipe('right')">♥</button>
+        <button class="btn no" onclick="swipe('left')">✕</button>
+        <button class="btn yes" onclick="swipe('right')">♥</button>
     </div>
 
     <script>
         const quotes = [
-            { text: "Don’t quit your daydream.", author: "Success" },
-            { text: "Make it happen.", author: "Motivation" },
-            { text: "Focus on the good.", author: "Positivity" },
-            { text: "Be a warrior, not a worrier.", author: "Daily Mantra" },
-            { text: "Your only limit is your mind.", author: "Mindset" }
+            { text: "Pain is temporary. Quitting lasts forever.", author: "Lance Armstrong" },
+            { text: "Your only limit is you.", author: "Daily Reminder" },
+            { text: "Do it with passion or not at all.", author: "Success" },
+            { text: "Great things never came from comfort zones.", author: "Anonymous" },
+            { text: "Stop wishing, start doing.", author: "Hustle" }
         ];
 
-        let currentIndex = 0;
+        let index = 0;
         const app = document.getElementById('app');
 
-        function createCard(index) {
-            const quote = quotes[index % quotes.length];
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="stamp stamp-like">KEEP</div>
-                <div class="stamp stamp-nope">NEXT</div>
-                <div class="quote-text">"${quote.text}"</div>
-                <div class="quote-author">${quote.author}</div>
+        function loadCard() {
+            const q = quotes[index % quotes.length];
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="quote-text">"${q.text}"</div>
+                <div class="quote-author">— ${q.author}</div>
             `;
-            return card;
+            app.appendChild(div);
         }
 
-        function init() {
-            app.appendChild(createCard(currentIndex));
-        }
-
-        function swipe(direction) {
+        function swipe(dir) {
             const card = app.querySelector('.card');
             if (!card) return;
-
-            const stamp = direction === 'right' ? card.querySelector('.stamp-like') : card.querySelector('.stamp-nope');
-            stamp.style.opacity = '1';
-
-            const rotation = direction === 'right' ? 25 : -25;
-            const translation = direction === 'right' ? 600 : -600;
-
-            card.style.transform = `translateX(${translation}px) rotate(${rotation}deg)`;
+            
+            const moveX = dir === 'right' ? 500 : -500;
+            const rotate = dir === 'right' ? 30 : -30;
+            
+            card.style.transform = `translateX(${moveX}px) rotate(${rotate}deg)`;
             card.style.opacity = '0';
-
+            
             setTimeout(() => {
                 card.remove();
-                currentIndex++;
-                app.appendChild(createCard(currentIndex));
-            }, 500);
+                index++;
+                loadCard();
+            }, 300);
         }
 
-        init();
+        loadCard(); // Start the first card
     </script>
 </body>
 </html>
