@@ -10,9 +10,7 @@
             --header-text: #a76bff;
             --card-bg: #ffffff;
             --text-main: #1a1a1a;
-            --text-sub: #888;
             --shadow: rgba(0,0,0,0.06);
-            --btn-no: #fff;
         }
 
         .dark-mode {
@@ -20,9 +18,7 @@
             --header-text: #ff85ff;
             --card-bg: #1e1e1e;
             --text-main: #ffffff;
-            --text-sub: #aaaaaa;
             --shadow: rgba(0,0,0,0.4);
-            --btn-no: #2a2a2a;
         }
 
         body {
@@ -102,10 +98,12 @@
             border-radius: 50%; border: none;
             cursor: pointer; font-size: 24px;
             box-shadow: 0 8px 20px var(--shadow);
+            transition: 0.2s;
         }
 
-        .no-btn { background: var(--btn-no); color: #ff4b2b; border: 1px solid #eee; }
+        .no-btn { background: var(--card-bg); color: #ff4b2b; border: 1px solid #eee; }
         .yes-btn { background: linear-gradient(135deg, #a76bff 0%, #ff85ff 100%); color: white; }
+        .btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
@@ -117,9 +115,9 @@
         </div>
         <div>
             <select class="ui-btn" id="category" onchange="fetchNewQuote()">
-                <option value="famous-quotes">Discover</option>
-                <option value="success">Success</option>
                 <option value="motivation">Motivation</option>
+                <option value="success">Success</option>
+                <option value="wisdom">Wisdom</option>
             </select>
             <button class="ui-btn" onclick="document.body.classList.toggle('dark-mode')">🌓 Theme</button>
         </div>
@@ -127,8 +125,8 @@
 
     <div id="app">
         <div id="main-card" class="card">
-            <div class="quote-text" id="text">"Your only limit is your mind."</div>
-            <div class="author-name" id="name">— Anonymous</div>
+            <div class="quote-text" id="text">"Loading..."</div>
+            <div class="author-name" id="name"></div>
         </div>
     </div>
 
@@ -138,18 +136,61 @@
     </div>
 
     <script>
+        // ADDED: Huge library for each category
+        const quoteLibrary = {
+            motivation: [
+                { t: "Your only limit is your mind.", a: "Anonymous" },
+                { t: "Push yourself, because no one else is going to do it for you.", a: "Unknown" },
+                { t: "Great things never come from comfort zones.", a: "Neil Strauss" },
+                { t: "Dream it. Wish it. Do it.", a: "Unknown" },
+                { t: "Stay focused and never give up.", a: "John Renzo" }
+            ],
+            success: [
+                { t: "Success is not final; failure is not fatal.", a: "Winston Churchill" },
+                { t: "The way to get started is to quit talking and begin doing.", a: "Steve Jobs" },
+                { t: "Don't be afraid to give up the good to go for the great.", a: "John D. Rockefeller" },
+                { t: "Success usually comes to those who are too busy to be looking for it.", a: "Henry David Thoreau" }
+            ],
+            wisdom: [
+                { t: "The only true wisdom is in knowing you know nothing.", a: "Socrates" },
+                { t: "In the middle of every difficulty lies opportunity.", a: "Albert Einstein" },
+                { t: "The journey of a thousand miles begins with one step.", a: "Lao Tzu" },
+                { t: "Knowing yourself is the beginning of all wisdom.", a: "Aristotle" }
+            ]
+        };
+
+        let lastIndex = -1;
+
         async function fetchNewQuote() {
             const cat = document.getElementById('category').value;
+            const quotes = quoteLibrary[cat];
+            
+            // Pick a random quote from the library
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * quotes.length);
+            } while (newIndex === lastIndex);
+            
+            lastIndex = newIndex;
+            const selected = quotes[newIndex];
+
+            // Try to update from live API, but use local if it fails or is slow
             try {
-                // The Date.now() part forces the browser to get a NEW quote every time
                 const res = await fetch(`https://api.quotable.io/random?tags=${cat}&t=${Date.now()}`);
-                const data = await res.json();
-                document.getElementById('text').innerText = `"${data.content}"`;
-                document.getElementById('name').innerText = `— ${data.author}`;
+                if(res.ok) {
+                    const data = await res.json();
+                    render(data.content, data.author);
+                } else {
+                    render(selected.t, selected.a);
+                }
             } catch (e) {
-                document.getElementById('text').innerText = "Keep moving forward.";
-                document.getElementById('name').innerText = "— Unknown";
+                render(selected.t, selected.a);
             }
+        }
+
+        function render(text, author) {
+            document.getElementById('text').innerText = `"${text}"`;
+            document.getElementById('name').innerText = `— ${author}`;
         }
 
         function swipe(dir) {
